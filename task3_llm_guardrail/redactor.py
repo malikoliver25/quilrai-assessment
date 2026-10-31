@@ -14,7 +14,9 @@ REDACTED = "[REDACTED]"
 # Full-match patterns (bounded so a single match has a known max length).
 PATTERNS: list[re.Pattern[str]] = [
     re.compile(r"\b\d{3}-\d{2}-\d{4}\b"),  # SSN (11 chars)
-    re.compile(r"\b\d(?:[ -]?\d){12,15}\b"),  # credit card, 13-16 digits (<=31 chars)
+    # Linear-time card shape: 4 groups of 4 digits (optional single separator),
+    # final group 1-4 digits. Matches 4111 1111 1111 1111 and 4111111111111111.
+    re.compile(r"\b(?:\d{4}[ -]?){3}\d{1,4}\b"),  # credit card, 13-16 digits
     re.compile(r"\b[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9.-]{1,253}\.[A-Za-z]{2,}\b"),  # email
 ]
 
@@ -22,7 +24,7 @@ PATTERNS: list[re.Pattern[str]] = [
 # grow into a full match. Bounded by RFC limits (local part <=64, domain <=255).
 PREFIX_PATTERNS: list[re.Pattern[str]] = [
     re.compile(r"\d{0,3}(?:-\d{0,2}(?:-\d{0,4})?)?$"),
-    re.compile(r"\d(?:[ -]?\d){0,14}[ -]?$"),
+    re.compile(r"(?:\d{4}[ -]?){0,3}\d{0,3}[ -]?$"),
     re.compile(r"[A-Za-z0-9._%+-]{1,64}(?:@[A-Za-z0-9.-]{0,253}(?:\.[A-Za-z]{0,2})?)?$"),
 ]
 
@@ -37,9 +39,10 @@ def _pending_prefix_len(buf: str) -> int:
     """Length of the longest suffix of buf that is a prefix of some match."""
     hold = 0
     for pat in PREFIX_PATTERNS:
+        # No early break: the longest suffix corresponds to the rightmost
+        # match start, which is not necessarily the first finditer hit.
         for m in pat.finditer(buf):
             hold = max(hold, len(buf) - m.start())
-            break  # finditer yields leftmost-first; first hit is the longest suffix
     return hold
 
 

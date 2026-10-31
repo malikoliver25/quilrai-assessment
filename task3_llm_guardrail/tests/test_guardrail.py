@@ -28,6 +28,13 @@ def test_pattern_split_across_chunks() -> None:
     assert out.count(REDACTED) == 2
 
 
+def test_card_split_across_chunks() -> None:
+    chunks = ["card 4111 11", "11 1111 ", "1111 end"]
+    out = "".join(redact_stream(chunks))
+    assert "4111 1111 1111 1111" not in out
+    assert out == "card [REDACTED] end"
+
+
 def test_holds_back_only_boundary_tail() -> None:
     """Emitted output per feed must never buffer the whole stream."""
     r = StreamRedactor()

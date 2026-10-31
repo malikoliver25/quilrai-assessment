@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "QuilrAI assessment: MCP server, MCP security gateway, LLM streaming guardrail, rate-limiting model router"
 requires-python = ">=3.11"
 dependencies = [
-    "mcp<2>=1.10",
+    "mcp>=1.10,<2",
     "pydantic>=2.7",
     "fastapi>=0.110",
     "uvicorn>=0.29",
@@ -21,4 +21,4 @@ asyncio_default_fixture_loop_scope = "function"
 testpaths = ["task1_mcp_server/tests", "task2_mcp_gateway/tests", "task3_llm_guardrail/tests", "task4_router/tests"]
 
 [tool.setuptools]
-packages = []
+packages = ["task1_mcp_server", "task2_mcp_gateway", "task3_llm_guardrail", "task4_router"]

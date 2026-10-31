@@ -5,8 +5,7 @@ Python monorepo (3.11+). One package per task, all tests under each package's `t
 ## Setup
 
 ```bash
-uv venv .venv && uv pip install --python .venv/bin/python 'mcp<2' pydantic fastapi uvicorn httpx pytest pytest-asyncio
-# or: .venv/bin/pip install -e ".[test]"
+uv venv .venv && uv pip install --python .venv/bin/python -e ".[test]"
 ```
 
 Run all tests:
